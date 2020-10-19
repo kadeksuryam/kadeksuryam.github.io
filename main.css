@@ -120,7 +120,8 @@ nav{
     width: auto;
     border-radius: 50%;
     display: block;
-    margin: 1.5rem 0;
+    margin: auto;
+    margin-bottom: 1.5rem ;;
 }
 
 .caption{
