@@ -47,7 +47,7 @@ function openGithub(){
 	window.open("https://github.com/kadeksuryam", "_blank");
 }
 function openCV(){
-	window.open("https://drive.google.com/file/d/1gohuTagj2stqAti1bkiBqW71vPD1dX78/view", "_blank");
+	window.open("https://docs.google.com/document/d/1HRMK2zLIllC9BhlDr3AAlSeCUhMgMQM6Ikopc1WETmY/edit", "_blank");
 }
 function openProject1(){
 	window.open("https://github.com/kadeksuryam/Algeo01-13519044", "_blank");
