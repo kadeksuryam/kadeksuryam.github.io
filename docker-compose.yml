@@ -1,0 +1,12 @@
+services:
+  about:
+    build: .
+    container_name: about
+    expose:
+      - "80"
+    networks:
+      - nginx
+
+networks:
+  nginx:
+    external: true
