@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="How an exhausted inotify instance limit caused a systemd re-exec to lose track of the root mount and stop healthy services, including SSH.">
+    <meta name="theme-color" content="#080c10">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="When SSH Went Dark: How an inotify Limit Confused systemd">
+    <meta property="og:description" content="A routine OpenSSL update, an exhausted inotify limit, and a systemd re-exec combined to stop healthy services.">
+    <meta property="og:url" content="https://kadeksuryam.github.io/blog/2026/08/03/when-ssh-went-dark-systemd-inotify/">
+    <meta property="og:image" content="https://kadeksuryam.github.io/images/og-ssh-systemd.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="When SSH Went Dark article cover">
+    <meta property="article:published_time" content="2026-08-03">
+    <meta property="article:author" content="Kadek Surya Mahardika">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="systemd">
+    <meta property="article:tag" content="inotify">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="When SSH Went Dark: How an inotify Limit Confused systemd">
+    <meta name="twitter:description" content="A routine OpenSSL update, an exhausted inotify limit, and a systemd re-exec combined to stop healthy services.">
+    <meta name="twitter:image" content="https://kadeksuryam.github.io/images/og-ssh-systemd.png">
+    <title>When SSH Went Dark: How an inotify Limit Confused systemd | Kadek Surya Mahardika</title>
+    <link rel="canonical" href="https://kadeksuryam.github.io/blog/2026/08/03/when-ssh-went-dark-systemd-inotify/">
+    <link rel="icon" type="image/x-icon" href="../../../../../images/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../../main.css">
+</head>
+<body>
+    <a class="skip-link" href="#article-content">Skip to article</a>
+    <div class="reading-progress" data-reading-progress aria-hidden="true"></div>
+
+    <header class="site-header">
+        <div class="container nav-shell">
+            <a class="brand" href="../../../../../index.html" aria-label="Kadek Surya Mahardika, home">
+                <span class="brand-mark" aria-hidden="true">&gt;_</span>
+                <span>KSM / DEV</span>
+            </a>
+
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-navigation" aria-label="Open navigation">
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav id="site-navigation" class="site-nav" aria-label="Primary navigation">
+                <a href="../../../../../index.html#experience">Experience</a>
+                <a href="../../../../../index.html#projects">Projects</a>
+                <a href="../../../../../index.html#writing">Writing</a>
+                <a href="../../../../../index.html#about">About</a>
+                <a href="../../../../../index.html#contact">Contact</a>
+                <a class="nav-resume" href="https://drive.google.com/file/d/1QLyIFbPNjd8b-xM27fAI_cXclHme2qhB/view?usp=sharing" target="_blank" rel="noreferrer">Résumé <span aria-hidden="true">↗</span></a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="article-main">
+        <header class="article-header">
+            <div class="article-header-inner">
+                <p class="article-kicker">Incident analysis / Linux systems</p>
+                <h1>When SSH Went Dark: How an inotify Limit Confused systemd</h1>
+                <p class="article-dek">A routine OpenSSL update, an exhausted inotify budget, and a re-exec left systemd with the wrong model of a healthy machine.</p>
+                <div class="article-meta">
+                    <span>By Kadek Surya Mahardika</span>
+                    <time datetime="2026-08-03">August 3, 2026</time>
+                    <span>11 min read</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="article-layout">
+            <aside class="article-aside" aria-label="Article contents">
+                <span>ON THIS PAGE</span>
+                <a href="#openssl-update">OpenSSL update</a>
+                <a href="#what-is-inotify">What is inotify?</a>
+                <a href="#root-mount">Root mount tracking</a>
+                <a href="#why-ssh-stopped">Why SSH stopped</a>
+                <a href="#why-oom">Why it looked like OOM</a>
+                <a href="#why-reboot-fixed-it">Why reboot fixed it</a>
+                <a href="#interesting-part">The interesting part</a>
+            </aside>
+
+            <article id="article-content" class="article-body">
+                <p>This came from a real incident at my workplace on a Hetzner dedicated server.</p>
+
+                <p>The first thing we noticed was simple: SSH stopped working. The server still looked alive, but new connections failed. We opened the Hetzner KVM console to investigate, but that appeared to hang too. At that point, we did not know whether we were dealing with a networking issue, an out-of-memory event, or a host that had become unhealthy.</p>
+
+                <p>The only useful clue was a set of OOM-killer messages in the remaining kernel logs, so that became the leading theory. With no reliable way into the server, we eventually power-cycled it. The machine came back normally.</p>
+
+                <p>Later, when we reconstructed the incident, it turned out the OOM theory was wrong. The real trigger was a routine automatic upgrade.</p>
+
+                <h2 id="openssl-update">It started with an OpenSSL update</h2>
+
+                <p>Ubuntu's unattended upgrades installed a new version of <code>libssl3</code> and <code>openssl</code>. After the upgrade, <code>needrestart</code> triggered:</p>
+
+                <pre><code>systemctl daemon-reexec</code></pre>
+
+                <p>This is more invasive than a normal reload. systemd remains PID 1, but replaces its own process image and rebuilds its internal state. That includes the filesystem watchers it uses to monitor parts of the system.</p>
+
+                <p>That is where the failure started.</p>
+
+                <h2 id="what-is-inotify">What is inotify?</h2>
+
+                <p><code>inotify</code> is a Linux API that lets applications watch files and directories for changes. Services use it to detect things such as configuration updates, new files, or changes related to mount state.</p>
+
+                <p>Linux limits how many inotify instances a user can create. The relevant setting is:</p>
+
+                <pre><code>fs.inotify.max_user_instances</code></pre>
+
+                <p>The important detail is that the limit is shared by all processes running under the same user ID. On this server, many system processes ran as <code>root</code>, so they all shared the UID 0 budget. The limit was still set to the Ubuntu default of 128, and it had already been exhausted.</p>
+
+                <h2 id="root-mount">systemd lost track of the root mount</h2>
+
+                <p>During the re-exec, systemd tried to recreate the watchers it uses to monitor the machine, including mount state. That failed with errors like:</p>
+
+                <pre><code>Failed to create timezone change event source: Too many open files
+Failed to acquire watch file descriptor: Too many open files
+Failed to drain libmount events: Invalid argument</code></pre>
+
+                <p>The message "Too many open files" was misleading here. PID 1 had not exhausted its normal file-descriptor limit. The resource that had run out was the inotify instance limit for UID 0.</p>
+
+                <p>The root filesystem was still mounted and working in the kernel, but systemd's internal state no longer matched reality. systemd represents the root mount as:</p>
+
+                <pre><code>-.mount</code></pre>
+
+                <p>After the failed re-exec, systemd decided that <code>-.mount</code> was inactive, so it tried to mount <code>/</code> again. That failed because <code>/</code> was already mounted. systemd then marked <code>-.mount</code> as failed.</p>
+
+                <p>The sequence was roughly:</p>
+
+                <pre><code>automatic OpenSSL upgrade
+→ needrestart triggers daemon-reexec
+→ systemd cannot recreate inotify watchers
+→ mount tracking breaks
+→ systemd thinks / is not mounted
+→ it tries to mount / again
+→ the mount command fails
+→ -.mount is marked failed</code></pre>
+
+                <h2 id="why-ssh-stopped">Why SSH stopped</h2>
+
+                <p><code>sshd</code> did not crash. systemd stopped it.</p>
+
+                <p>The SSH service depends on the root mount because it needs <code>/run/sshd</code>. Once systemd believed that <code>-.mount</code> had failed, it enforced that dependency and sent <code>SIGTERM</code> to <code>sshd</code>. The same cascade also stopped journald, PostgreSQL, nginx, fail2ban, and containerd.</p>
+
+                <p>This is also why the services stayed down. They had not crashed unexpectedly, so normal restart policies did not apply. systemd had stopped them deliberately.</p>
+
+                <div class="article-callout">
+                    <p>From systemd's point of view, the behavior was internally consistent: its model said the root mount had failed, so dependent services had to stop. The problem was that the model was wrong.</p>
+                </div>
+
+                <h2 id="why-oom">Why it looked like an OOM</h2>
+
+                <p>The surviving kernel logs contained repeated OOM-killer messages involving Velero. Those messages were real, but they were limited to the container's own memory cgroup. There was no evidence of a system-wide OOM, kernel panic, or total memory exhaustion on the host.</p>
+
+                <p>The OOM messages were misleading. They were especially convincing because journald had already been stopped, which meant most of the logs needed to understand the incident were missing.</p>
+
+                <h2 id="why-reboot-fixed-it">Why the reboot fixed it</h2>
+
+                <p>The reboot forced systemd to rebuild its state from scratch. This time, the mount state was detected correctly and the required watchers were created normally. SSH and journald came back with the rest of the system.</p>
+
+                <p>We raised the inotify limits and made the change persistent:</p>
+
+                <pre><code>fs.inotify.max_user_instances = 1024
+fs.inotify.max_user_watches = 1048576</code></pre>
+
+                <h2 id="interesting-part">The interesting part</h2>
+
+                <p>The root filesystem never failed. The kernel still had <code>/</code> mounted. What failed was systemd's view of the machine.</p>
+
+                <p>Once that view became wrong, systemd acted on it and shut down healthy services. The incident was not really about SSH, and it was not really about a broken filesystem. It was about a controller making the wrong decision because its internal model had drifted away from reality.</p>
+
+                <footer class="article-footer">
+                    <a href="../../../../../index.html#writing">← Back to all writing</a>
+                </footer>
+            </article>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <p>Kadek Surya Mahardika</p>
+            <p>Full-stack software engineer · Erkelenz, Germany</p>
+            <p>© <span data-current-year>2026</span></p>
+        </div>
+    </footer>
+
+    <script src="../../../../../main.js"></script>
+</body>
+</html>
