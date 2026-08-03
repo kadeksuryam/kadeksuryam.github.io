@@ -8,11 +8,11 @@ description: "How an exhausted inotify instance limit caused a systemd re-exec t
 
 # When SSH Went Dark: How an inotify Limit Confused systemd
 
-This happened on a Hetzner dedicated server at work.
+This came from a real incident at my workplace on a Hetzner dedicated server.
 
-We noticed it in the most obvious way: SSH stopped accepting connections. The server was still up, but we could not get in. We opened the Hetzner KVM console, and that appeared to hang too. At that point we had three plausible explanations: a network problem, an out-of-memory event, or a host that was simply falling over.
+The first thing we noticed was simple: SSH stopped working. The server still looked alive, but new connections failed. We opened the Hetzner KVM console to investigate, but that appeared to hang too. At that point, we did not know whether we were dealing with a networking issue, an out-of-memory event, or a host that had become unhealthy.
 
-The surviving kernel logs gave us one clue: a run of OOM-killer messages. With no reliable way into the machine, that became our working theory and we eventually power-cycled it. The server came back normally.
+The only useful clue was a set of OOM-killer messages in the remaining kernel logs, so that became the leading theory. With no reliable way into the server, we eventually power-cycled it. The machine came back normally.
 
 Only afterward, when we reconstructed the timeline, did we realize that the OOM messages had sent us in the wrong direction. The trigger was a routine automatic upgrade.
 
@@ -106,4 +106,4 @@ The root filesystem never failed. The kernel knew that `/` was mounted; systemd 
 
 We went into the incident looking for a dead SSH daemon, memory exhaustion, or a broken host. The actual failure sat one layer higher: PID 1 had the wrong picture of a healthy system and acted on it. Once we understood that, the service shutdowns stopped looking random.
 
-The practical fix was raising two limits, but that was only a small part of what I took from the incident. I learned how inotify limits are shared, what systemd actually rebuilds during a re-exec, and that PID 1 keeps its own internal model of the machine. Before this, I had never really thought about what happens when that model stops matching the kernel's state.
+The practical fix was raising two limits, but that was only a small part of what I took from the incident. I learned how inotify limits are shared, what systemd actually rebuilds during a re-exec, and that PID 1 keeps its own internal model of the machine. The part I found most interesting was that the kernel and systemd could disagree about something as fundamental as whether `/` was mounted.
