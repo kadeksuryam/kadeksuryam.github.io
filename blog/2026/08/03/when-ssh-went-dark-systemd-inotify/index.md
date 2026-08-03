@@ -8,29 +8,29 @@ description: "How an exhausted inotify instance limit caused a systemd re-exec t
 
 # When SSH Went Dark: How an inotify Limit Confused systemd
 
-This came from a real incident at my workplace on a Hetzner dedicated server.
+This happened on a Hetzner dedicated server at work.
 
-The first thing we noticed was simple: SSH stopped working. The server still looked alive, but new connections failed. We opened the Hetzner KVM console to investigate, but that appeared to hang too. At that point, we did not know whether we were dealing with a networking issue, an out-of-memory event, or a host that had become unhealthy.
+We noticed it in the most obvious way: SSH stopped accepting connections. The server was still up, but we could not get in. We opened the Hetzner KVM console, and that appeared to hang too. At that point we had three plausible explanations: a network problem, an out-of-memory event, or a host that was simply falling over.
 
-The only useful clue was a set of OOM-killer messages in the remaining kernel logs, so that became the leading theory. With no reliable way into the server, we eventually power-cycled it. The machine came back normally.
+The surviving kernel logs gave us one clue: a run of OOM-killer messages. With no reliable way into the machine, that became our working theory and we eventually power-cycled it. The server came back normally.
 
-Later, when we reconstructed the incident, it turned out the OOM theory was wrong. The real trigger was a routine automatic upgrade.
+Only afterward, when we reconstructed the timeline, did we realize that the OOM messages had sent us in the wrong direction. The trigger was a routine automatic upgrade.
 
 ## It started with an OpenSSL update
 
-Ubuntu's unattended upgrades installed a new version of `libssl3` and `openssl`. After the upgrade, `needrestart` triggered:
+Ubuntu's unattended upgrades installed a new version of `libssl3` and `openssl`. As part of the cleanup, `needrestart` ran:
 
 ```bash
 systemctl daemon-reexec
 ```
 
-This is more invasive than a normal reload. systemd remains PID 1, but replaces its own process image and rebuilds its internal state. That includes the filesystem watchers it uses to monitor parts of the system.
+`daemon-reexec` is more invasive than the usual `daemon-reload`. systemd remains PID 1, but replaces its own process image and rebuilds its internal state. That includes the filesystem watchers it uses to monitor the machine.
 
-That is where the failure started.
+That re-exec was the turning point.
 
 ## What is inotify?
 
-`inotify` is a Linux API that lets applications watch files and directories for changes. Services use it to detect things such as configuration updates, new files, or changes related to mount state.
+If you have not run into it before, `inotify` is the Linux API applications use to watch files and directories for changes. Services rely on it for configuration updates, new files, and changes in mount state.
 
 Linux limits how many inotify instances a user can create. The relevant setting is:
 
@@ -38,11 +38,11 @@ Linux limits how many inotify instances a user can create. The relevant setting 
 fs.inotify.max_user_instances
 ```
 
-The important detail is that the limit is shared by all processes running under the same user ID. On this server, many system processes ran as `root`, so they all shared the UID 0 budget. The limit was still set to the Ubuntu default of 128, and it had already been exhausted.
+The catch for us was that this limit is shared by every process running under the same user ID. Many system processes ran as `root`, so they all drew from the same UID 0 budget. The server was still using Ubuntu's default limit of 128. By the time systemd needed another instance, there were none left.
 
 ## systemd lost track of the root mount
 
-During the re-exec, systemd tried to recreate the watchers it uses to monitor the machine, including mount state. That failed with errors like:
+During the re-exec, systemd had to recreate its watchers, including the ones used for mount state. It could not, and logged errors like:
 
 ```text
 Failed to create timezone change event source: Too many open files
@@ -50,17 +50,17 @@ Failed to acquire watch file descriptor: Too many open files
 Failed to drain libmount events: Invalid argument
 ```
 
-The message "Too many open files" was misleading here. PID 1 had not exhausted its normal file-descriptor limit. The resource that had run out was the inotify instance limit for UID 0.
+"Too many open files" initially pointed us toward the usual file-descriptor limits. That was not the problem. PID 1 still had file descriptors available; UID 0 had run out of inotify instances.
 
-The root filesystem was still mounted and working in the kernel, but systemd's internal state no longer matched reality. systemd represents the root mount as:
+The root filesystem was still mounted and working in the kernel, but systemd's internal state no longer matched reality. It represents the root mount with the slightly odd-looking unit name:
 
 ```text
 -.mount
 ```
 
-After the failed re-exec, systemd decided that `-.mount` was inactive, so it tried to mount `/` again. That failed because `/` was already mounted. systemd then marked `-.mount` as failed.
+After the failed re-exec, systemd believed that `-.mount` was inactive and tried to mount `/` again. Of course that failed: `/` was already mounted. systemd took the failed command at face value and marked `-.mount` as failed.
 
-The sequence was roughly:
+This is the sequence we eventually pieced together:
 
 ```text
 automatic OpenSSL upgrade
@@ -75,23 +75,23 @@ automatic OpenSSL upgrade
 
 ## Why SSH stopped
 
-`sshd` did not crash. systemd stopped it.
+Here is the part that initially felt backward: `sshd` did not crash. systemd stopped it.
 
-The SSH service depends on the root mount because it needs `/run/sshd`. Once systemd believed that `-.mount` had failed, it enforced that dependency and sent `SIGTERM` to `sshd`. The same cascade also stopped journald, PostgreSQL, nginx, fail2ban, and containerd.
+The SSH service depends on the root mount, partly because it needs `/run/sshd`. Once systemd believed that `-.mount` had failed, it enforced the dependency and sent `SIGTERM` to `sshd`. The same cascade took down journald, PostgreSQL, nginx, fail2ban, and containerd.
 
-This is also why the services stayed down. They had not crashed unexpectedly, so normal restart policies did not apply. systemd had stopped them deliberately.
+That also explains why the services stayed down. They had not crashed, so their normal restart policies never came into play. From systemd's perspective, stopping them was intentional.
 
-From systemd's point of view, the behavior was internally consistent: its model said the root mount had failed, so dependent services had to stop. The problem was that the model was wrong.
+Given the state systemd believed, stopping the services made sense. The bad decision came from a bad picture of the machine, not from a random failure in `sshd`.
 
 ## Why it looked like an OOM
 
-The surviving kernel logs contained repeated OOM-killer messages involving Velero. Those messages were real, but they were limited to the container's own memory cgroup. There was no evidence of a system-wide OOM, kernel panic, or total memory exhaustion on the host.
+We initially blamed the OOM messages involving Velero because they were the clearest evidence we had. They were real, but they belonged to the container's own memory cgroup. We found no sign of a host-wide OOM, kernel panic, or total memory exhaustion.
 
-The OOM messages were misleading. They were especially convincing because journald had already been stopped, which meant most of the logs needed to understand the incident were missing.
+The logs were not lying; they were describing a different problem. By then systemd had already stopped journald, so much of the evidence we needed for the actual incident was gone. That made the noisy clue much easier to trust than the missing one.
 
 ## Why the reboot fixed it
 
-The reboot forced systemd to rebuild its state from scratch. This time, the mount state was detected correctly and the required watchers were created normally. SSH and journald came back with the rest of the system.
+The power cycle fixed the state, not the underlying limit. systemd started clean, detected the root mount correctly, and recreated the watchers it needed. SSH and journald came back with the rest of the machine.
 
 We raised the inotify limits and made the change persistent:
 
@@ -100,8 +100,10 @@ fs.inotify.max_user_instances = 1024
 fs.inotify.max_user_watches = 1048576
 ```
 
-## The interesting part
+## What stayed with me
 
-The root filesystem never failed. The kernel still had `/` mounted. What failed was systemd's view of the machine.
+The root filesystem never failed. The kernel knew that `/` was mounted; systemd had lost that fact.
 
-Once that view became wrong, systemd acted on it and shut down healthy services. The incident was not really about SSH, and it was not really about a broken filesystem. It was about a controller making the wrong decision because its internal model had drifted away from reality.
+We went into the incident looking for a dead SSH daemon, memory exhaustion, or a broken host. The actual failure sat one layer higher: PID 1 had the wrong picture of a healthy system and acted on it. Once we understood that, the service shutdowns stopped looking random.
+
+The practical fix was raising two limits. The lesson I kept was to take "Too many open files" less literally during a systemd re-exec. Next time, I will check the inotify budget before assuming the process has simply run out of file descriptors.
