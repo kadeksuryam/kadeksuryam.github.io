@@ -87,7 +87,7 @@ Given the state systemd believed, stopping the services made sense. The bad deci
 
 We initially blamed the OOM messages involving Velero because they were the clearest evidence we had. They were real, but they belonged to the container's own memory cgroup. We found no sign of a host-wide OOM, kernel panic, or total memory exhaustion.
 
-The logs were not lying; they were describing a different problem. By then systemd had already stopped journald, so much of the evidence we needed for the actual incident was gone. That made the noisy clue much easier to trust than the missing one.
+The logs were not lying. They were describing a different problem. By then systemd had already stopped journald, so much of the evidence we needed for the actual incident was gone. That made the noisy clue much easier to trust than the missing one.
 
 ## Why the reboot fixed it
 

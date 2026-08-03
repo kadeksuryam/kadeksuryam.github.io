@@ -153,7 +153,7 @@ Failed to drain libmount events: Invalid argument</code></pre>
 
                 <p>We initially blamed the OOM messages involving Velero because they were the clearest evidence we had. They were real, but they belonged to the container's own memory cgroup. We found no sign of a host-wide OOM, kernel panic, or total memory exhaustion.</p>
 
-                <p>The logs were not lying; they were describing a different problem. By then systemd had already stopped journald, so much of the evidence we needed for the actual incident was gone. That made the noisy clue much easier to trust than the missing one.</p>
+                <p>The logs were not lying. They were describing a different problem. By then systemd had already stopped journald, so much of the evidence we needed for the actual incident was gone. That made the noisy clue much easier to trust than the missing one.</p>
 
                 <h2 id="why-reboot-fixed-it">Why the reboot fixed it</h2>
 
