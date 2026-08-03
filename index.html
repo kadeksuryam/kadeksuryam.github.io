@@ -1,140 +1,282 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>Surya Mahardika | Software Engineer</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
-
-    <script src="https://kit.fontawesome.com/6abca51d65.js" crossorigin="anonymous"></script>
-    <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Kadek Surya Mahardika is a full-stack software engineer building reliable backend systems, web and mobile products, and production infrastructure.">
+    <meta name="theme-color" content="#080c10">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Kadek Surya Mahardika | Full-Stack Software Engineer">
+    <meta property="og:description" content="Full-stack engineering, backend systems, infrastructure automation, and notes from production.">
+    <meta property="og:url" content="https://kadeksuryam.github.io/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Kadek Surya Mahardika | Full-Stack Software Engineer">
+    <meta name="twitter:description" content="Full-stack engineering, backend systems, infrastructure automation, and notes from production.">
+    <title>Kadek Surya Mahardika | Full-Stack Software Engineer</title>
+    <link rel="canonical" href="https://kadeksuryam.github.io/">
+    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="main.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <nav>
-                <div class="burger-menu-icon"> 
-                    <div class="line1"></div>
-                    <div class="line2"></div>
-                    <div class="line3"></div>
-                </div>
-                <ul class="nav-list">
-                    <li class="nav-item">
-                        <a href="#landing-page">
-                            <img src="images/pp.jpg" alt="Surya Mahardika" class="profile-pic nav-link" />
-                            <span class="caption nav-link">Surya Mahardika</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#about" class="nav-link">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="https://tinyurl.com/surya-personal-project" class="nav-link" target="_blank">Projects</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="https://medium.com/@kadeksuryam" class="nav-link" target="_blank">Blog</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#contact" class="nav-link">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="https://drive.google.com/file/d/1QLyIFbPNjd8b-xM27fAI_cXclHme2qhB/view?usp=sharing" class="nav-link" target="_blank">CV/Resume</a>
-                    </li>
-                </ul>
-            </nav>
+    <a class="skip-link" href="#main-content">Skip to content</a>
 
+    <header class="site-header">
+        <div class="container nav-shell">
+            <a class="brand" href="#top" aria-label="Kadek Surya Mahardika, home">
+                <span class="brand-mark" aria-hidden="true">&gt;_</span>
+                <span>KSM / DEV</span>
+            </a>
+
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-navigation" aria-label="Open navigation">
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav id="site-navigation" class="site-nav" aria-label="Primary navigation">
+                <a href="#experience">Experience</a>
+                <a href="#projects">Projects</a>
+                <a href="#writing">Writing</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+                <a class="nav-resume" href="https://drive.google.com/file/d/1QLyIFbPNjd8b-xM27fAI_cXclHme2qhB/view?usp=sharing" target="_blank" rel="noreferrer">Résumé <span aria-hidden="true">↗</span></a>
+            </nav>
         </div>
     </header>
-    <main>
-        <section id="landing-page" class="landing-page">
-            <div class="container">
-                <div class="main-message">
-                    <h2>Surya Mahardika</h2>
-                    <h3>{Software Engineer}</h3>
-                    <div class="intro-btn">
-                        <div class="cta">
-                            <a href="https://drive.google.com/file/d/1QLyIFbPNjd8b-xM27fAI_cXclHme2qhB/view?usp=sharing" class="btn" target="_blank">CV/Resume</a>
-                        </div>
-                        <div class="cta">
-                            <a href="https://tinyurl.com/surya-personal-project" class="btn" target="_blank">Projects</a>
-                        </div>
-                    </div> 
-                    <div>
-                        <div class="cta">
-                            <a href="https://www.linkedin.com/in/kadeksuryam/" target="_blank" class="btn">
-                                <i class="fab fa-linkedin"> LinkedIn</i>
-                            </a>
-                            <a href="https://www.github.com/kadeksuryam" target="_blank" class="btn">
-                                <i class="fab fa-github"> Github</i>
-                            </a>
-                        </div>
-                        <div class="cta">
 
+    <main id="main-content">
+        <section id="top" class="hero section">
+            <div class="container hero-grid">
+                <div class="hero-copy reveal">
+                    <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> Erkelenz, Germany · software engineer</p>
+                    <h1>I build software that <span>holds up in production.</span></h1>
+                    <p class="hero-summary">
+                        I am Kadek Surya Mahardika, a full-stack engineer working across backend systems, web and mobile products, and the infrastructure that keeps them reliable.
+                    </p>
+                    <div class="hero-actions">
+                        <a class="button button-primary" href="#writing">Read my latest post <span aria-hidden="true">→</span></a>
+                        <a class="button button-ghost" href="https://github.com/kadeksuryam" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+                    </div>
+                </div>
+
+                <aside class="terminal-card reveal" aria-label="Current engineering focus">
+                    <div class="terminal-bar">
+                        <span></span><span></span><span></span>
+                        <p>surya@production ~</p>
+                    </div>
+                    <div class="terminal-body">
+                        <p><span class="prompt">$</span> whoami</p>
+                        <p class="terminal-output">full-stack software engineer</p>
+                        <p><span class="prompt">$</span> cat focus.txt</p>
+                        <ul class="terminal-output terminal-list">
+                            <li>backend systems &amp; APIs</li>
+                            <li>platform reliability</li>
+                            <li>observability &amp; incident response</li>
+                            <li>infrastructure automation</li>
+                        </ul>
+                        <p><span class="prompt">$</span> uptime</p>
+                        <p class="terminal-output">shipping, learning, improving<span class="cursor" aria-hidden="true"></span></p>
+                    </div>
+                </aside>
+            </div>
+        </section>
+
+        <section class="stack-strip" aria-label="Technical stack">
+            <div class="container stack-list">
+                <span>Python / Django</span>
+                <span>TypeScript / React</span>
+                <span>PostgreSQL</span>
+                <span>Docker / Kubernetes</span>
+                <span>Grafana / Prometheus</span>
+                <span>GitLab CI/CD</span>
+            </div>
+        </section>
+
+        <section id="experience" class="section">
+            <div class="container">
+                <div class="section-heading reveal">
+                    <p class="section-index">01 / EXPERIENCE</p>
+                    <h2>From product code to production systems.</h2>
+                    <p>I work comfortably across application, database, and infrastructure layers - especially where reliability and backward compatibility matter.</p>
+                </div>
+
+                <div class="timeline">
+                    <article class="timeline-item reveal">
+                        <div class="timeline-date">JUL 2023 - PRESENT</div>
+                        <div class="timeline-content">
+                            <div class="role-heading">
+                                <div>
+                                    <h3>Full-Stack Software Engineer</h3>
+                                    <p>IT-Bauschmiede GmbH · Erkelenz, Germany</p>
+                                </div>
+                                <span>Core team</span>
+                            </div>
+                            <p>I own backend features and maintenance for a production photovoltaic platform, while improving deployment consistency, observability, mobile delivery, and on-call response.</p>
+                            <ul class="tag-list" aria-label="Technologies used at IT-Bauschmiede">
+                                <li>Python</li><li>Django</li><li>PostgreSQL</li><li>React</li><li>React Native</li><li>Docker</li><li>Proxmox</li><li>Grafana</li><li>Prometheus</li>
+                            </ul>
                         </div>
-                        <a href="#about" class="scroll-down">
-                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
-                        </a>
+                    </article>
+
+                    <article class="timeline-item reveal">
+                        <div class="timeline-date">FEB 2024 - OCT 2024</div>
+                        <div class="timeline-content">
+                            <div class="role-heading">
+                                <div>
+                                    <h3>Software Engineer I</h3>
+                                    <p>CSG International · Remote</p>
+                                </div>
+                                <span>OOTB team</span>
+                            </div>
+                            <p>I designed backward-compatible Java libraries and APIs, supported CI/CD automation, and managed AWS EKS environments for version-specific demos and testing.</p>
+                            <ul class="tag-list" aria-label="Technologies used at CSG International">
+                                <li>Java</li><li>Spring</li><li>AWS</li><li>EKS</li><li>Jenkins</li><li>Consul</li>
+                            </ul>
+                        </div>
+                    </article>
+
+                    <article class="timeline-item reveal">
+                        <div class="timeline-date">AUG 2021 - FEB 2023</div>
+                        <div class="timeline-content">
+                            <div class="role-heading">
+                                <div>
+                                    <h3>Software Engineer Intern</h3>
+                                    <p>GoTo Financial · Remote</p>
+                                </div>
+                                <span>Commerce Enablement</span>
+                            </div>
+                            <p>I rebuilt an internal admin tool into a service-oriented backend and helped operate event-driven services using Kafka and Kubernetes.</p>
+                            <ul class="tag-list" aria-label="Technologies used at GoTo Financial">
+                                <li>Java</li><li>Spring Boot</li><li>Kafka</li><li>Kubernetes</li><li>React</li><li>PostgreSQL</li>
+                            </ul>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="section section-alt">
+            <div class="container">
+                <div class="section-heading reveal">
+                    <p class="section-index">02 / SELECTED PROJECTS</p>
+                    <h2>Systems work, outside the day job.</h2>
+                </div>
+
+                <div class="project-grid">
+                    <article class="project-card reveal">
+                        <div class="project-number">01</div>
+                        <div>
+                            <p class="project-kicker">KUBERNETES SECURITY · 2023</p>
+                            <h3>Securing Kubernetes Secrets in Pods</h3>
+                            <p>A custom Kubernetes controller in Go that enforces secret-access policies with KubeArmor, reducing the blast radius of misconfigured workloads.</p>
+                            <ul class="tag-list"><li>Go</li><li>Kubernetes</li><li>KubeArmor</li><li>Bash</li></ul>
+                        </div>
+                        <a href="https://github.com/secret-ta/karmor-secret-controller" target="_blank" rel="noreferrer" aria-label="View Securing Kubernetes Secrets in Pods on GitHub">View repository <span aria-hidden="true">↗</span></a>
+                    </article>
+
+                    <article class="project-card reveal">
+                        <div class="project-number">02</div>
+                        <div>
+                            <p class="project-kicker">FULL-STACK PLATFORM · 2021</p>
+                            <h3>Stand With Dorayaki</h3>
+                            <p>An inventory management platform spanning backend APIs, a React interface, PostgreSQL, object storage, Kubernetes, and Argo CD delivery.</p>
+                            <ul class="tag-list"><li>Go</li><li>React</li><li>PostgreSQL</li><li>Kubernetes</li><li>Argo CD</li></ul>
+                        </div>
+                        <a href="https://github.com/kadeksuryam-project-1" target="_blank" rel="noreferrer" aria-label="View Stand With Dorayaki on GitHub">View GitHub organization <span aria-hidden="true">↗</span></a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="writing" class="section writing-section">
+            <div class="container">
+                <div class="section-heading reveal">
+                    <p class="section-index">03 / WRITING</p>
+                    <h2>Notes from real systems.</h2>
+                    <p>Incident analysis, infrastructure lessons, and the details that only appear once software meets production.</p>
+                </div>
+
+                <article class="featured-post reveal">
+                    <div class="post-meta">
+                        <time datetime="2026-08-03">AUG 03, 2026</time>
+                        <span>11 min read</span>
+                    </div>
+                    <div class="post-copy">
+                        <p class="post-label">LATEST / INCIDENT ANALYSIS</p>
+                        <h3><a href="blog/when-ssh-went-dark-systemd-inotify/">When SSH Went Dark: How an inotify Limit Confused systemd</a></h3>
+                        <p>A routine OpenSSL update, an exhausted inotify limit, and a systemd re-exec combined to stop healthy services - while the root filesystem itself never failed.</p>
+                        <ul class="tag-list"><li>Linux</li><li>systemd</li><li>inotify</li><li>incident response</li></ul>
+                    </div>
+                    <a class="post-arrow" href="blog/when-ssh-went-dark-systemd-inotify/" aria-label="Read When SSH Went Dark"><span aria-hidden="true">↗</span></a>
+                </article>
+            </div>
+        </section>
+
+        <section id="about" class="section section-alt">
+            <div class="container about-grid">
+                <div class="section-heading reveal">
+                    <p class="section-index">04 / ABOUT</p>
+                    <h2>Curious about how systems behave under real-world constraints.</h2>
+                </div>
+
+                <div class="about-copy reveal">
+                    <p>I am a software engineer from Indonesia, now based in Erkelenz, Germany. My work sits at the intersection of full-stack product development, backend engineering, and infrastructure operations.</p>
+                    <p>I care about maintainable APIs, safe deployments, useful observability, and understanding the failure modes hiding underneath an apparently simple incident.</p>
+                    <div class="education-block">
+                        <span>EDUCATION</span>
+                        <p><strong>B.Sc. Computer Science</strong><br>Bandung Institute of Technology · 2019-2023</p>
+                    </div>
+                </div>
+
+                <div class="skills-grid reveal">
+                    <div>
+                        <span>PRIMARY</span>
+                        <p>JavaScript / TypeScript, React, Python, Django, PostgreSQL</p>
+                    </div>
+                    <div>
+                        <span>BACKEND</span>
+                        <p>Java / Spring Boot, Go, Kafka, REST APIs, C# / .NET Core</p>
+                    </div>
+                    <div>
+                        <span>INFRASTRUCTURE</span>
+                        <p>Docker, Kubernetes, Terraform, Ansible, Proxmox, AWS, Hetzner</p>
+                    </div>
+                    <div>
+                        <span>LANGUAGES</span>
+                        <p>Indonesian (native), English (professional), German (A2)</p>
                     </div>
                 </div>
             </div>
         </section>
-        <section id="about" class="about">
-            <div class="container">
-                <div class="about-img">
-                    <img src="images/pp.jpg" alt="Surya Mahardika" class="about-pic" />
-                </div>
-                <div class="about-text-box">
-                    <h2>Hello There 👋🏽</h2>
-                    <p>
-                        I'm Surya from Bali, Indonesia. I'm a software engineer with several years of experience. 
-                        Predominantly working as a full-stack developer but I also possess expertise in infrastructure related to Kubernetes.
-                        Beyond my technical skills,  I'm a diligent worker, quick learner, and adept at handling pressure.  
-                        <br />
-                        <br />
-                        By the way, I'm deeply passionate about understanding the inner workings of technology and the exciting ways it shapes our world. 
-                        I'm always seeking opportunities to leverage my skills while expanding my knowledge and expertise in this ever-evolving field.
-                    </p> 
-                </div>
-            </div>
-            <hr />
-        </section>
-        <section id="contact" class="contact">
-            <h2>Get In Touch</h2>
-            <p>
-                Your thoughts and feedback are invaluable to me, and I genuinely appreciate the opportunity to connect with you. 
-            </p>
-            <p>
-                Whether you have inquiries, suggestions, or simply want to exchange a friendly "Hey!", I encourage you to drop me a line. 
-                I believe that open communication is the foundation of meaningful connections, and I'm eager to hear from you 😊.
-            </p>
 
-            <div class="container">
-                <p>
-                    <a href="mailto:kadeksuryam@gmail.com"
-                        ><i class="fas fa-envelope-open"></i> kadeksuryam@gmail.com</a
-                    >
-                </p>
-                <p>
-                    <a href="https://www.linkedin.com/in/kadeksuryam/" target="_blank">
-                        <i class="fab fa-linkedin"> LinkedIn</i>
-                    </a>
-                </p>
+        <section id="contact" class="section contact-section">
+            <div class="container contact-grid reveal">
+                <div>
+                    <p class="section-index">05 / CONTACT</p>
+                    <h2>Have a hard problem worth unpacking?</h2>
+                </div>
+                <div class="contact-copy">
+                    <p>I am always interested in thoughtful conversations about software engineering, backend systems, and infrastructure.</p>
+                    <a class="email-link" href="mailto:kadeksuryam@gmail.com">kadeksuryam@gmail.com <span aria-hidden="true">↗</span></a>
+                    <div class="social-links">
+                        <a href="https://www.linkedin.com/in/kadeksuryam/" target="_blank" rel="noreferrer">LinkedIn</a>
+                        <a href="https://github.com/kadeksuryam" target="_blank" rel="noreferrer">GitHub</a>
+                    </div>
+                </div>
             </div>
-            <hr />
         </section>
-        <footer>
-            <div class="footer-nav">
-                <a href="#landing-page" class="footer-nav-link">Home</a>
-                <a href="#about" class="footer-nav-link">About</a>
-                <a href="https://medium.com/@kadeksuryam" class="footer-nav-link" target="_blank">Blog</a>
-                <a href="#contact" class="footer-nav-link">Contact</a>
-            </div>
-            <div class="footer-coded-by">
-                <p>Built with pure HTML, CSS and JavaScript</p>
-            </div>
-        </footer>       
     </main>
-    <script src='main.js'></script>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <p>Kadek Surya Mahardika</p>
+            <p>Full-stack software engineer · Erkelenz, Germany</p>
+            <p>© <span data-current-year>2026</span></p>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
 </body>
 </html>

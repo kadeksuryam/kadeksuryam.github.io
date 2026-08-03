@@ -1,60 +1,76 @@
-// Function expression to select elements
+document.documentElement.classList.add("js");
 
-const selectElement = (s) => document.querySelector(s);
-const navLinks = document.querySelectorAll(".nav-link");
+const navToggle = document.querySelector(".nav-toggle");
+const siteNav = document.querySelector(".site-nav");
 
-selectElement(".burger-menu-icon").addEventListener("click", ()=>{
-    selectElement(".nav-list").classList.toggle("active");
-    selectElement(".burger-menu-icon").classList.toggle("toggle");
+const closeNavigation = () => {
+    if (!navToggle || !siteNav) return;
 
-    navLinks.forEach((link, index) => {
-        if(link.style.animation){
-            link.style.animation = "";
-        }else{
-            link.style.animation = `navLinkAnimate 0.5s ease forwards ${ index/7 + 0.5}s`
-        }
-    })
+    navToggle.setAttribute("aria-expanded", "false");
+    navToggle.setAttribute("aria-label", "Open navigation");
+    siteNav.classList.remove("is-open");
+    document.body.classList.remove("nav-open");
+};
+
+if (navToggle && siteNav) {
+    navToggle.addEventListener("click", () => {
+        const willOpen = navToggle.getAttribute("aria-expanded") !== "true";
+
+        navToggle.setAttribute("aria-expanded", String(willOpen));
+        navToggle.setAttribute("aria-label", willOpen ? "Close navigation" : "Open navigation");
+        siteNav.classList.toggle("is-open", willOpen);
+        document.body.classList.toggle("nav-open", willOpen);
+    });
+
+    siteNav.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", closeNavigation);
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeNavigation();
+    });
+
+    window.addEventListener("resize", () => {
+        if (window.innerWidth > 780) closeNavigation();
+    });
+}
+
+document.querySelectorAll("[data-current-year]").forEach((element) => {
+    element.textContent = String(new Date().getFullYear());
 });
 
-navLinks.forEach(link => {
-    link.addEventListener("click", ()=>{
-        selectElement(".nav-list").classList.toggle("active");
-        selectElement(".burger-menu-icon").classList.toggle("toggle");
-        navLinks.forEach((link, index) => {
-            if(link.style.animation){
-                link.style.animation = "";
-            }else{
-                link.style.animation = `navLinkAnimate 0.5s ease forwards ${ index/7 + 0.5}s`
-            }
-        })
-    })
-})
+const revealItems = document.querySelectorAll(".reveal");
 
+if ("IntersectionObserver" in window) {
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
 
-function openEmail(){
-	window.open("mailto:kadeksuryam@gmail.com?subject=<edit the subject>");
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+        });
+    }, { threshold: 0.12 });
+
+    revealItems.forEach((item) => revealObserver.observe(item));
+} else {
+    revealItems.forEach((item) => item.classList.add("is-visible"));
 }
-function openFacebook(){
-	window.open("https://www.facebook.com/surya.mahardika.184", "_blank");
-}
-function openInstagram(){
-	window.open("https://www.instagram.com/suryam1729/", "_blank");
-}
-function openLinkedIn(){
-	window.open("https://www.linkedin.com/in/kadek-surya-m-695256122/", "_blank");
-}
-function openGithub(){
-	window.open("https://github.com/kadeksuryam", "_blank");
-}
-function openCV(){
-	window.open("https://docs.google.com/document/d/1HRMK2zLIllC9BhlDr3AAlSeCUhMgMQM6Ikopc1WETmY/edit", "_blank");
-}
-function openProject1(){
-	window.open("https://github.com/kadeksuryam/Algeo01-13519044", "_blank");
-}
-function openProject2(){
-	window.open("https://github.com/kadeksuryam/Tubes_Daspro_IF1210", "_blank");
-}
-function openProject3(){
-	window.open("https://github.com/kadeksuryam/Tubes_Daspro_IF1210", "_blank");
+
+const readingProgress = document.querySelector("[data-reading-progress]");
+const articleBody = document.querySelector(".article-body");
+
+if (readingProgress && articleBody) {
+    const updateReadingProgress = () => {
+        const articleTop = articleBody.getBoundingClientRect().top + window.scrollY;
+        const articleHeight = articleBody.offsetHeight;
+        const viewportOffset = window.innerHeight * 0.55;
+        const distanceRead = window.scrollY + viewportOffset - articleTop;
+        const progress = Math.min(1, Math.max(0, distanceRead / articleHeight));
+
+        readingProgress.style.width = `${progress * 100}%`;
+    };
+
+    updateReadingProgress();
+    window.addEventListener("scroll", updateReadingProgress, { passive: true });
+    window.addEventListener("resize", updateReadingProgress);
 }
