@@ -170,22 +170,6 @@ img {
     transform-origin: left;
 }
 
-.site-nav .nav-resume {
-    padding: 8px 12px;
-    color: var(--accent);
-    border: 1px solid rgba(154, 248, 117, 0.45);
-}
-
-.site-nav .nav-resume::after {
-    display: none;
-}
-
-.site-nav .nav-resume:hover,
-.site-nav .nav-resume:focus-visible {
-    color: var(--bg);
-    background: var(--accent);
-}
-
 .nav-toggle {
     display: none;
     width: 42px;
@@ -665,6 +649,14 @@ img {
 .project-card > a:focus-visible {
     text-decoration: underline;
     text-underline-offset: 5px;
+}
+
+.project-status {
+    align-self: flex-start;
+    margin: 0;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 0.74rem;
 }
 
 .writing-section {
@@ -1149,13 +1141,6 @@ img {
 
     .site-nav a::after {
         display: none;
-    }
-
-    .site-nav .nav-resume {
-        margin-top: 20px;
-        padding: 12px 14px;
-        border: 1px solid rgba(154, 248, 117, 0.45);
-        text-align: center;
     }
 
     .hero {
