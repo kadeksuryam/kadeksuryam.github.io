@@ -106,4 +106,4 @@ The root filesystem never failed. The kernel knew that `/` was mounted; systemd 
 
 We went into the incident looking for a dead SSH daemon, memory exhaustion, or a broken host. The actual failure sat one layer higher: PID 1 had the wrong picture of a healthy system and acted on it. Once we understood that, the service shutdowns stopped looking random.
 
-The practical fix was raising two limits. The lesson I kept was to take "Too many open files" less literally during a systemd re-exec. Next time, I will check the inotify budget before assuming the process has simply run out of file descriptors.
+The practical fix was raising two limits, but that was only a small part of what I took from the incident. I learned how inotify limits are shared, what systemd actually rebuilds during a re-exec, and that PID 1 keeps its own internal model of the machine. Before this, I had never really thought about what happens when that model stops matching the kernel's state.
