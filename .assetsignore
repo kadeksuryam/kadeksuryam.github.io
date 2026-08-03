@@ -1,15 +1,15 @@
 # Repository and deployment internals
-.git
-.git/**
-.wrangler
-.wrangler/**
-.DS_Store
-node_modules
-node_modules/**
+/.git
+/.git/**
+/.wrangler
+/.wrangler/**
+/.DS_Store
+/node_modules
+/node_modules/**
 
 # Files that are not part of the public website
-.assetsignore
-wrangler.jsonc
-Dockerfile
-docker-compose.yml
-**/*.md
+/.assetsignore
+/wrangler.jsonc
+/Dockerfile
+/docker-compose.yml
+/**/*.md
