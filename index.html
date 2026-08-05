@@ -20,7 +20,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="main.css?v=20260803-5">
+    <link rel="stylesheet" href="main.css?v=20260805-1">
 </head>
 <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -39,7 +39,7 @@
 
             <nav id="site-navigation" class="site-nav" aria-label="Primary navigation">
                 <a href="#projects">Work</a>
-                <a href="#writing">Writing</a>
+                <a href="blog/">Writing</a>
                 <a href="#contact">Contact</a>
             </nav>
         </div>
@@ -55,7 +55,7 @@
                         I am Kadek Surya Mahardika, a full-stack engineer based in Erkelenz, Germany. I work across backend systems, web and mobile products, and the infrastructure that keeps them reliable.
                     </p>
                     <div class="hero-actions">
-                        <a class="button button-primary" href="#writing">Read my latest post <span aria-hidden="true">→</span></a>
+                        <a class="button button-primary" href="blog/2026/08/03/when-ssh-went-dark-systemd-inotify/">Read my latest post <span aria-hidden="true">→</span></a>
                         <a class="button button-ghost" href="https://github.com/kadeksuryam" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
                     </div>
 
@@ -125,22 +125,32 @@
             <div class="container">
                 <div class="section-heading reveal">
                     <p class="section-index">02 / WRITING</p>
-                    <h2>Infrastructure, systems, and the things I learn along the way.</h2>
+                    <h2>Notes from the systems I build and debug.</h2>
                 </div>
 
-                <article class="featured-post reveal">
-                    <div class="post-meta">
-                        <time datetime="2026-08-03">AUG 03, 2026</time>
-                        <span>11 min read</span>
+                <div class="writing-ledger reveal">
+                    <div class="writing-year" aria-hidden="true">
+                        <span>2026</span>
+                        <small>01 note</small>
                     </div>
-                    <div class="post-copy">
-                        <p class="post-label">LATEST / INCIDENT ANALYSIS</p>
-                        <h3><a href="blog/2026/08/03/when-ssh-went-dark-systemd-inotify/">When SSH Went Dark: How an inotify Limit Confused systemd</a></h3>
-                        <p>A routine OpenSSL update, an exhausted inotify limit, and a systemd re-exec combined to stop healthy services - while the root filesystem itself never failed.</p>
-                        <ul class="tag-list"><li>Linux</li><li>systemd</li><li>inotify</li><li>incident response</li></ul>
-                    </div>
-                    <a class="post-arrow" href="blog/2026/08/03/when-ssh-went-dark-systemd-inotify/" aria-label="Read When SSH Went Dark"><span aria-hidden="true">↗</span></a>
-                </article>
+                    <article class="writing-row">
+                        <time class="writing-date" datetime="2026-08-03">
+                            <span>AUG</span>
+                            <strong>03</strong>
+                        </time>
+                        <div class="writing-copy">
+                            <div class="writing-meta">
+                                <span>Incident analysis</span>
+                                <span>11 min read</span>
+                            </div>
+                            <h3><a href="blog/2026/08/03/when-ssh-went-dark-systemd-inotify/">When SSH Went Dark: How an inotify Limit Confused systemd</a></h3>
+                            <p>A routine update, an exhausted inotify limit, and the moment PID 1 lost its picture of a healthy machine.</p>
+                        </div>
+                        <a class="post-arrow" href="blog/2026/08/03/when-ssh-went-dark-systemd-inotify/" aria-label="Read When SSH Went Dark"><span aria-hidden="true">↗</span></a>
+                    </article>
+                </div>
+
+                <a class="archive-link reveal" href="blog/">Browse the writing archive <span aria-hidden="true">→</span></a>
             </div>
         </section>
 
