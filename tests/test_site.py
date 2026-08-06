@@ -82,6 +82,11 @@ class SiteContractTest(unittest.TestCase):
         for name, digest in expected.items():
             self.assertEqual(digest, sha256((ROOT / name).read_bytes()).hexdigest())
 
+    def test_deployment_excludes_repository_test_assets(self):
+        ignored = (ROOT / ".assetsignore").read_text(encoding="utf-8").splitlines()
+        for required in ("/.gitignore", "/Makefile", "/tests", "/tests/**"):
+            self.assertIn(required, ignored)
+
 
 if __name__ == "__main__":
     unittest.main()
