@@ -9,7 +9,11 @@
 
 # Files that are not part of the public website
 /.assetsignore
+/.gitignore
 /wrangler.jsonc
+/Makefile
+/tests
+/tests/**
 /Dockerfile
 /docker-compose.yml
 /**/*.md
